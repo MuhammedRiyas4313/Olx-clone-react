@@ -1,9 +1,35 @@
-import React from 'react';
+import React, { useContext, useEffect, useState }  from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Heart from '../../assets/Heart';
+import ViewPost from '../../Pages/ViewPost';
+import { FirebaseContext } from '../../store/Context';
+import { PostContext } from '../../store/PostContext';
+
 import './Post.css';
 
 function Posts() {
+
+  const history = useHistory()
+
+  const [products,setProducts] = useState([])
+  const {firebase} = useContext(FirebaseContext)
+  const {setPostDetails} = useContext(PostContext);
+
+  useEffect(()=>{
+    firebase.firestore().collection('products').get().then((snapshot)=>{
+      const allPost = snapshot.docs.map((product)=>{
+        return {
+          ...product.data(),
+          id:product.id
+        }
+      })
+      console.log(allPost,'all posts from map....')
+      setProducts(allPost)
+    })
+  },[])
+
+
 
   return (
     <div className="postParentDiv">
@@ -13,24 +39,32 @@ function Posts() {
           <span>View more</span>
         </div>
         <div className="cards">
-          <div
+          {products ? products.map((product)=>{
+            return  (
+              <div
             className="card"
+            onClick={()=>{
+              setPostDetails(product)
+              history.push('/viewpost')
+            }}
           >
             <div className="favorite">
               <Heart></Heart>
             </div>
             <div className="image">
-              <img src="../../../Images/R15V3.jpg" alt="" />
+              <img src={product.url} alt="" />
             </div>
             <div className="content">
-              <p className="rate">&#x20B9; 250000</p>
-              <span className="kilometer">Two Wheeler</span>
-              <p className="name"> YAMAHA R15V3</p>
+              <p className="rate">&#x20B9; {product.price}</p>
+              <span className="kilometer">{product.category}</span>
+              <p className="name"> {product.name}</p>
             </div>
             <div className="date">
-              <span>Tue May 04 2021</span>
+              <span>{product.createdAt}</span>
             </div>
           </div>
+            )
+          }) : <div style={{textAlign:'center'}}> <h1>No items found !</h1></div>}
         </div>
       </div>
       <div className="recommendations">

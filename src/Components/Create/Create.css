@@ -1,9 +1,9 @@
 .centerDiv {
     border: 1px solid black;
     width: max-content;
-    padding: 50px;
+    padding: 60px;
     position: absolute;
-    top: 65%;
+    top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 6px;
